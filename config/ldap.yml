@@ -1,0 +1,21 @@
+# LDAP server configuration settings
+# Host is a Windows Domain Controller
+
+development:
+  host: 34.132.123.10
+  port: 389
+  default_domain: arqsoft.unal.edu.co
+  base: dc=arqsoft,dc=unal,dc=edu,dc=co
+
+test:
+  host: 34.132.123.10
+  port: 389
+  default_domain: arqsoft.unal.edu.co
+  base: dc=arqsoft,dc=unal,dc=edu,dc=co
+
+production:
+  #host: 127.0.0.1
+  host: 34.132.123.10
+  port: 389
+  default_domain: arqsoft.unal.edu.co
+  base: dc=arqsoft,dc=unal,dc=edu,dc=co

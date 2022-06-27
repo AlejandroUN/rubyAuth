@@ -1,3 +1,5 @@
+require 'net/ldap'
+
 class SessionsController < ApplicationController
 	skip_before_action :authenticate_request
 	def new
@@ -44,16 +46,28 @@ class SessionsController < ApplicationController
 	end
 
 	def create
-#		email = params[:email]
-#		password = params[:password]
+		email = params[:email]
+		puts email
+		password = params[:password]
+		puts password
+		ldap      = Net::LDAP.new
+		ldap.host = LDAP_CONFIG['host']
+		puts ldap.host
+		ldap.port = LDAP_CONFIG['port']
+		puts ldap.port
+		ldap.authenticate "cn=#{email},ou=sa,dc=arqsoft,dc=unal,dc=edu,dc=co", password
+		bound = ldap.bind
+	
+		if bound
+			puts "Got it"
+		else
+			render json: error= {
+				:error => "Error: user is not in organization (LDAP)"
+			}
+			return ""
+		end
+
 		userFound = User.find_by(:email => params[:email])
-#		if user && user.password_digest == password
-#			response = user
-#		else
-#			response = "Error: user not found"
-#		
-#		end
-#		render json: response
 		command = AuthenticateUser.call(params[:email], params[:password])
 
 		if command.success?
@@ -64,7 +78,10 @@ class SessionsController < ApplicationController
 		  render json: userInfo
 		  #render json: { auth_token: command.result }
 		else
-		  render json: { error: command.errors }, status: :unauthorized
+			render json: error= {
+				:error => "Error: invalid credentials"
+			}
+		  #render json: { error: command.errors }, status: :unauthorized
 		end
 	end
 
